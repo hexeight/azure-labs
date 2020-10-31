@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<head>
+    <script>
+        const hash = window.location.href.split('#').pop();
+        const query = window.location.href.split('#').pop();
+    </script>
+</head>
+
+<body>
+    <div>
+        This is bare minimum demo for OAuth 2.0 Implicit flow with Azure AD. If you would like to read more, visit <a
+            href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow">https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow</a>
+    </div>
+    <hr/>
+    <div>
+        <a href="login.html">Go back to Login</a>
+        <div id="hash-view" style="width:200px"></div>
+        <div id="query-view"></div>
+    </div>
+    <script>
+        function loadUrlParameters() {
+            let urlParams = {};
+            let hashes = hash.split("&")
+            hashes.forEach(h => {
+                let kv = h.split('=');
+                urlParams[kv[0]] = kv[1];
+            });
+
+            let queries = query.split("&")
+            hashes.forEach(h => {
+                let kv = h.split('=');
+                urlParams[kv[0]] = kv[1];
+            });
+
+            return urlParams;
+        }
+        let urlParams = loadUrlParameters();
+        console.log(urlParams);
+
+        function urlencodeFormData(fd) {
+            var s = '';
+            function encode(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }
+            for (var pair of fd.entries()) {
+                if (typeof pair[1] == 'string') {
+                    s += (s ? '&' : '') + encode(pair[0]) + '=' + encode(pair[1]);
+                }
+            }
+            return s;
+        }
+
+    </script>
+</body>
+
+</html>

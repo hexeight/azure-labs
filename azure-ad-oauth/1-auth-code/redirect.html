@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<head>
+    <script>
+        const hash = window.location.href.split('#').pop();
+        const query = window.location.href.split('#').pop();
+    </script>
+</head>
+
+<body>
+    <div>
+        This is bare minimum demo for OAuth 2.0 with Azure AD. If you would like to read more, visit <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop">https://docs.microsoft.com/en-us/azure/active-directory/develop</a>
+    </div>
+    <hr/>
+    <div>
+        <a href="login.html">Go back to Login</a>
+        <div id="hash-view" style="width:200px"></div>
+        <div id="query-view"></div>
+    </div>
+    <script>
+        const appConfig = {
+            tenantId: "<Enter Tenant ID>",
+            clientId: "<Enter Client ID>",
+            scope: "<Enter scope>",
+            redirectUri: "http://localhost:8080/spa-implicit-token.html"
+        };
+
+        function loadUrlParameters() {
+            let urlParams = {};
+            let hashes = hash.split("&")
+            hashes.forEach(h => {
+                let kv = h.split('=');
+                urlParams[kv[0]] = kv[1];
+            });
+
+            let queries = query.split("&")
+            hashes.forEach(h => {
+                let kv = h.split('=');
+                urlParams[kv[0]] = kv[1];
+            });
+
+            return urlParams;
+        }
+        let urlParams = loadUrlParameters();
+        console.log(urlParams);
+
+    </script>
+</body>
+
+</html>
