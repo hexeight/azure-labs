@@ -9,20 +9,21 @@
 
 <body>
     <div>
-        This is bare minimum demo for OAuth 2.0 Implicit flow with Azure AD. If you would like to read more, visit <a
-            href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow">https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow</a>
+        This is bare minimum demo for OAuth 2.0  with Azure AD. If you would like to read more, visit <a
+            href="https://docs.microsoft.com/en-us/azure/active-directory/develop">https://docs.microsoft.com/en-us/azure/active-directory/develop</a>
     </div>
-    <hr />
+    <hr/>
     <div>
+        <a href="login.html">Go back to Login</a>
         <div id="hash-view" style="width:200px"></div>
         <div id="query-view"></div>
     </div>
     <script>
         const appConfig = {
-            tenantId: "981c08e3-3aac-4b99-9ead-f05044d30a50",
-            clientId: "79254b4e-c4fc-4998-b1b2-b01d11249365",
-            scope: "https://graph.microsoft.com/.default",
-            redirectUri: "http://localhost:8080/spa-implicit-token.html"
+            tenantId: "<Enter Tenant ID>",
+            clientId: "<Enter Client ID>",
+            scope: "<Enter scope>",
+            redirectUri: "http://localhost:8080/3-pkce/redirect.html"
         };
 
         function loadUrlParameters() {
@@ -44,15 +45,6 @@
         let urlParams = loadUrlParameters();
         console.log(urlParams);
 
-        // Get access token
-        /*
-        client_id=6731de76-14a6-49ae-97bc-6eba6914391e
-        &scope=https%3A%2F%2Fgraph.microsoft.com%2Fmail.read
-        &code=OAAABAAAAiL9Kn2Z27UubvWFPbm0gLWQJVzCTE9UkP3pSx1aXxUjq3n8b2JRLk4OxVXr...
-        &redirect_uri=http%3A%2F%2Flocalhost%2Fmyapp%2F
-        &grant_type=authorization_code
-        */
-
         function urlencodeFormData(fd) {
             var s = '';
             function encode(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }
@@ -66,6 +58,7 @@
 
         function getAccessTokenWithCode(params) {
             var xhr = new XMLHttpRequest();
+
             xhr.open("POST", "https://login.microsoftonline.com/" + appConfig.tenantId + "/oauth2/v2.0/token", true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             let tokenRequest = new FormData();
@@ -74,6 +67,9 @@
             tokenRequest.append("redirect_uri", appConfig.redirectUri);
             tokenRequest.append("grant_type", "authorization_code");
             tokenRequest.append("code", params.code);
+
+            let codeVerifier = sessionStorage.getItem("code_verifier")
+            tokenRequest.append("code_verifier", codeVerifier);
 
             let tokenRequestBody = urlencodeFormData(tokenRequest);
             console.log(tokenRequestBody);
@@ -86,8 +82,8 @@
             }
         }
 
+        // Get access token on page load
         getAccessTokenWithCode(urlParams);
-
     </script>
 </body>
 

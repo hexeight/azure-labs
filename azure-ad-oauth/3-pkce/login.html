@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+    <script>
+        const appConfig = {
+            tenantId: "<Enter Tenant ID>",
+            clientId: "<Enter Client ID>",
+            scope: "<Enter scope>",
+
+            responseType: "code",
+
+            //responseMode: "query",
+            responseMode: "fragment",
+            
+            redirectUri: "http://localhost:8080/3-pkce/redirect.html",
+            
+            //codeChallengeMethod: "plain"
+            codeChallengeMethod: "S256"
+        };
+        
+        // Generate GUID - Ctrl + C, Ctrl + V from http://blog.shkedy.com/2007/01/createing-guids-with-client-side.html
+        function generateGuid() {
+            var result, i, j;
+            result = '';
+            for (j = 0; j < 32; j++) {
+                if (j == 8 || j == 12 || j == 16 || j == 20)
+                    result = result + '-';
+                i = Math.floor(Math.random() * 16).toString(16).toUpperCase();
+                result = result + i;
+            }
+            return result;
+        }
+
+        function login(t) {
+            let state = generateGuid();
+            let nonce = generateGuid();
+            
+            let codeVerifier = generateCodeVerifier();
+            appConfig.codeChallenge = generateCodeChallenge(codeVerifier);
+
+            sessionStorage.setItem("code_verifier", codeVerifier)
+            sessionStorage.setItem("oauth_state", state);
+            sessionStorage.setItem("openid_nonce", nonce);
+            window.location = "https://login.microsoftonline.com/" + appConfig.tenantId + "/oauth2/v2.0/authorize?" +
+                "client_id=" + appConfig.clientId +
+                "&response_type=" + appConfig.responseType +
+                "&redirect_uri=" + appConfig.redirectUri +
+                "&scope=" + appConfig.scope +
+                "&response_mode=" + appConfig.responseMode +
+                "&state=" + state +
+                "&code_challenge_method=" + appConfig.codeChallengeMethod +
+                "&code_challenge=" + appConfig.codeChallenge +
+                "&nonce=" + nonce;
+        }
+
+        // Source: https://gist.github.com/tonyxu-io/21eb57ab2a4aeb2a3ee10f77542abe64
+        function generateCodeVerifier() {
+            var code_verifier = generateRandomString(128)
+            console.log("Code verifier:", code_verifier);
+            return code_verifier;
+        }
+
+        function generateRandomString(length) {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+            for (var i = 0; i < length; i++) {
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+            }
+            return text;
+        }
+        function generateCodeChallenge(code_verifier) {
+            return code_challenge = base64URL(CryptoJS.SHA256(code_verifier))
+        }
+
+        function base64URL(string) {
+            return string.toString(CryptoJS.enc.Base64).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        This is bare minimum demo for OAuth 2.0 with Azure AD. If you would like to read more, visit <a
+            href="https://docs.microsoft.com/en-us/azure/active-directory/develop">https://docs.microsoft.com/en-us/azure/active-directory/develop</a>
+    </div>
+    <div>
+        <button onclick="login('test')">Login</button>
+    </div>
+</body>
+
+</html>
